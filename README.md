@@ -4,5 +4,6 @@
 ### Project on consumer data from Netflix
 
 > Makassiouk, Alex
+<br>
 > Stokke, Ida
 
