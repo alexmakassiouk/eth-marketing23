@@ -1,7 +1,7 @@
 import pandas as pd
 from IPython.display import display
+import numpy as np
 
-# Import data from data.csv with pandas
 def get_data():
     data = pd.read_csv('../data.csv', sep=';')
     return data
@@ -40,3 +40,19 @@ def get_customer_base_sizes():
     customer_base_sizes = df.groupby('time_month ').size()
     return customer_base_sizes.values.tolist()
 
+#updated from main.py: 
+
+def get_retention_rates(index : int):
+    customers_left = df[df['cohort '] == index].groupby('time_month ').size().values.tolist()
+    retention_rates = []
+    #Putting zeros where retention rates are N/A
+    for i in range(1,len(customers_left)):
+        retention_rates +=[customers_left[i]/customers_left[i-1]] 
+    if index <10: 
+        retention_rates += [0]
+    retention_rates = retention_rates + [np.NaN]*(12 -len(retention_rates))
+    return retention_rates
+
+def get_avg_retention_rate(index : int):
+    retention_rates = np.array(get_retention_rates(index))
+    return np.nanmean(retention_rates)
