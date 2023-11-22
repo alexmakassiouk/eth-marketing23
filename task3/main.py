@@ -45,9 +45,27 @@ def get_cohort_sizes(data: DataFrame) -> list[int]:
     cohort_sizes = data.groupby('cohort ').size()
     return cohort_sizes.values.tolist()
 
+# TASK 3
+
+def get_retention_rate(data: DataFrame, month_number: int) -> float:
+    continuing_customers = 0
+    for i in range(data['user  '].max()+1):
+        if len(data[data['user  '] == i]) > month_number:
+            continuing_customers += 1
+    all_customers = len(data['user  '].unique())
+    return continuing_customers/all_customers
+
+def get_retention_rates(data: DataFrame) -> list[float]:
+    retention_rates = []
+    for i in range(0,12):
+        retention_rates.append(get_retention_rate(data, i))
+    return retention_rates
+
 def main():
     data = get_data()
-    print(get_max_time_df(data))
-    print(get_cohort_sizes(data))
+    cohort_number = 2
+    cohort_data = data[data['cohort '] == cohort_number]
+    explore_data(cohort_data)
+    print(get_retention_rates(cohort_data))
 
 main()
