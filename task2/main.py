@@ -4,7 +4,7 @@ from IPython.display import display
 
 # Import data from data.csv with pandas
 def get_raw_data() -> DataFrame:
-    data = pd.read_csv('./data.csv', sep=';')
+    data = pd.read_csv('../data.csv', sep=';')
     return data
 
 # Explore data from get_data()
@@ -41,19 +41,21 @@ def get_max_time_df(data: DataFrame) -> DataFrame:
     max_time_df = get_max_column_df(max_year_df, 'time_month ')
     return max_time_df
 
-# Method that returns a list containing the number of rows for each value in the column 'cohort'
 def get_cohort_sizes(data: DataFrame) -> list[int]:
-    cohort_sizes = data.groupby('cohort ').size()
-    return cohort_sizes.values.tolist()
-def get_customer_base_sizes():
-    customer_base_sizes = df.groupby('time_month ').size()
-    return customer_base_sizes.values.tolist()
+    # Return the number of unique user values for each cohort
+    cohort_sizes = data.groupby('cohort ')["user  "].nunique()
+    return cohort_sizes
+
+def get_customer_base_sizes(data: DataFrame) -> list[int]:
+    customer_base_sizes = data.groupby('time_month ')["user  "].nunique()
+    return customer_base_sizes
 
 def main():
     data = get_data()
     print(get_max_time_df(data))
     print(get_cohort_sizes(data))
+    print(get_max_time_df(clean_data(get_raw_data())))
 
-main()
+# main()
 
 
