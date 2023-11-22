@@ -1,6 +1,5 @@
 import pandas as pd
 from pandas import DataFrame
-from IPython.display import display
 
 # Import data from data.csv with pandas
 def get_raw_data() -> DataFrame:
@@ -9,10 +8,10 @@ def get_raw_data() -> DataFrame:
 
 # Explore data from get_data()
 def explore_data(data: DataFrame) -> None:
-    display(data.head())
-    display(data.describe())
-    display(data.info())
-    display(data.columns)
+    print(data.head())
+    print(data.describe())
+    print(data.info())
+    print(data.columns)
 
 # Fill all NaN values with 0
 def clean_data(data: DataFrame) -> DataFrame:
@@ -20,7 +19,7 @@ def clean_data(data: DataFrame) -> DataFrame:
     return data
 
 def modify_month_values(data: DataFrame) -> None:
-    data['time_month '] = (data['time_month '] + 9)%12
+    data['time_month '] = data['time_month '].apply(lambda x: x - 1)
 # Replace all values in time_month with the number that is 1 less than the value, according to CPA instructions
 
 def get_data() -> DataFrame:
@@ -45,15 +44,28 @@ def get_max_time_df(data: DataFrame) -> DataFrame:
 def get_cohort_sizes(data: DataFrame) -> list[int]:
     cohort_sizes = data.groupby('cohort ').size()
     return cohort_sizes.values.tolist()
-def get_customer_base_sizes():
-    customer_base_sizes = df.groupby('time_month ').size()
-    return customer_base_sizes.values.tolist()
+
+# TASK 3
+
+def get_retention_rate(data: DataFrame, month_number: int) -> float:
+    continuing_customers = 0
+    for i in range(data['user  '].max()+1):
+        if len(data[data['user  '] == i]) > month_number:
+            continuing_customers += 1
+    all_customers = len(data['user  '].unique())
+    return continuing_customers/all_customers
+
+def get_retention_rates(data: DataFrame) -> list[float]:
+    retention_rates = []
+    for i in range(0,12):
+        retention_rates.append(get_retention_rate(data, i))
+    return retention_rates
 
 def main():
     data = get_data()
-    print(get_max_time_df(data))
-    print(get_cohort_sizes(data))
+    cohort_number = 2
+    cohort_data = data[data['cohort '] == cohort_number]
+    explore_data(cohort_data)
+    print(get_retention_rates(cohort_data))
 
 main()
-
-
