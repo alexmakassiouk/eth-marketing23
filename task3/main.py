@@ -4,7 +4,7 @@ from IPython.display import display
 
 # Import data from data.csv with pandas
 def get_raw_data() -> DataFrame:
-    data = pd.read_csv('./data.csv', sep=';')
+    data = pd.read_csv('../data.csv', sep=';')
     return data
 
 # Explore data from get_data()
@@ -52,25 +52,38 @@ def get_customer_base_sizes(data: DataFrame) -> list[int]:
 
 # TASK 3
 
-def get_retention_rate(data: DataFrame, month_number: int) -> float:
-    continuing_customers = 0
-    for i in range(data['user  '].max()+1):
-        if len(data[data['user  '] == i]) > month_number:
-            continuing_customers += 1
-    all_customers = len(data['user  '].unique())
-    return continuing_customers/all_customers
+def get_unique_users_for_month(data: DataFrame, month: int) -> list[int]:
+    # Filter the DataFrame for the given month
+    filtered_df = data[data['time_month '] == month]
 
-def get_retention_rates(data: DataFrame) -> list[float]:
+    # Get unique users
+    unique_users = filtered_df['user  '].unique()
+
+    return list(unique_users)
+
+def get_retention_rate(data: DataFrame, month_ended_number: int) -> float:
+    continuing_customers = 0
+    customer_base_0 = get_unique_users_for_month(data, month_ended_number)
+    new_customer_base = get_unique_users_for_month(data, month_ended_number+1)
+    
+    if len(customer_base_0) == 0:
+        return 0
+    for i in customer_base_0:
+        if i in new_customer_base:
+            continuing_customers += 1
+    return round(continuing_customers/len(customer_base_0),5)
+
+def get_all_retention_rates(data: DataFrame) -> list[float]:
     retention_rates = []
     for i in range(0,12):
         retention_rates.append(get_retention_rate(data, i))
     return retention_rates
 
+def get_all_retention_rates_for_cohort(data: DataFrame, cohort_number: int) -> list[float]:
+    cohort_data = data[data['cohort '] == cohort_number]
+    return get_all_retention_rates(cohort_data)
+
 def main():
     data = get_data()
-    cohort_number = 2
-    cohort_data = data[data['cohort '] == cohort_number]
-    explore_data(cohort_data)
-    print(get_retention_rates(cohort_data))
-
-main()
+    for cohort_number in range(12):
+        print(get_all_retention_rates_for_cohort(data, cohort_number=cohort_number))
